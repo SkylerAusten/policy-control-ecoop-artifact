@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Study Instructions</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    
+    <!-- Load trace renderer for styling HospitalRequests -->
+    <script src="{{ url_for('static', filename='js/trace-renderer.js') }}"></script>
+    
+    <!-- Initialize trace renderer on page load -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            TraceRenderer.init();
+        });
+    </script>
+    <style>
+        /* Request styling classes */
+        .request-subject {
+            color: #4169e1;
+            font-weight: bold;
+        }
+
+        .request-action {
+            color: #F26035;
+        }
+
+        .request-resource {
+            color: #009B55;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Access Control Policies Study</h3>
+                <p class="fs-5 alert">
+                    Access Control Policies are designed to allow or block requests for resources. In this study, you'll be shown a <b>description of an access control policy in English</b>. This description was given to an AI language model to generate candidate policies that might match that description.
+                </p>
+
+                <div class="alert fs-5">
+                    <h4 class="mb-2">Request Components</h4>
+                    <p>Each request has a:</p>
+                    <ul>
+                        <li><span class="request-subject">Subject (sub):</span> the person making a request. <span class="request-subject">Subjects</span> have one or more roles (e.g., Lawyer, Manager).</li>
+                        <li><span class="request-action">Action (act):</span> what the subject wants to do (e.g., Read, Write).</li>
+                        <li><span class="request-resource">Resource (res):</span> the thing being accessed (e.g., MedicalRecord, FinancialReport).</li>
+                    </ul>
+                    <p><span class="request-subject">Subjects</span>, <span class="request-action">Actions</span>, and <span class="request-resource">Resources</span> may have attributes that further specify their characteristics (e.g. <span class="request-subject">sub</span>.inTraining = True).</p>
+                </div>
+
+                <div class="alert fs-5">
+                    <h4 class="mb-2">Example Policy</h4>
+                    <p>
+                        Let's now look at an example policy...
+                    </p>
+
+                    <p class="mb-2"><b>Policy Description:</b></p>
+                    <div class="mt-2 alert alert-secondary" role="alert">
+                        <b>Managers can...</b> 
+                        <p>- read any resource.</p>
+                        <p>- write payslips, unless they're in training.</p>
+                        <b>Lawyers can...</b> 
+                        <p>- read and write contracts.</p>
+                    </div>
+                    <br>
+                    <p class="mb-2"><b>Corresponding Policy:</b></p>
+                    <div class="card bg-light p-3 mb-3">
+                        <pre class="mb-0" style="white-space: pre-wrap; word-break: break-word;">permits = { 
+  (<span class="request-subject">role</span> = Manager and <span class="request-action">act</span> = Read) or
+  (<span class="request-subject">role</span> = Manager and <span class="request-action">act</span> = Write and <span class="request-resource">res</span> = Payslip) or
+  (<span class="request-subject">role</span> = Lawyer and <span class="request-resource">res</span> = Contract)
+}
+
+denies  = {
+  (<span class="request-subject">role</span> = Manager and <span class="request-action">act</span> = Write and <span class="request-resource">res</span> = Payslip and <span class="request-subject">sub</span>.inTraining = True)
+}</pre>
+                    </div>
+                    <p class="small text-muted">Anything not expressed in the permit rules is implicitly denied.</p>
+
+                <div class="alert fs-5">
+                    <h4 class="mb-2">How to Read a Request</h4>
+                    <div class="card bg-light p-2 mb-1"><pre class="ltl-spot-trace" data-word="Subject: Person1
+  roles: {Lawyer}
+  inTraining: False
+Action: Read
+Resource: Contract">Subject: Person1
+  roles: {Lawyer}
+  inTraining: False
+Action: Read
+Resource: Contract</pre></div>
+                    <p>This represents a lawyer (not in training) requesting to read a contract.</p>
+                </div>
+
+                <div class="alert fs-5">
+                    <h4 class="mb-2">How to Evaluate Requests</h4>
+                    <p>When evaluating a request:</p>
+                    <ol>
+                        <li>The subject is mapped to their role(s).</li>
+                        <li>For each role, the request is evaluated against the permit and deny rules:
+                            <ul>
+                                <li>If no permit rule applies, the request is denied (by default) for that role.</li>
+                                <li>If a permit rule applies but a deny rule also applies, the request is denied for that role.</li>
+                                <li>If a permit rule applies and no deny rule applies, only then is the request permitted for that role.</li>
+                            </ul>
+                        </li>
+                        <li>A request is allowed if it is permitted by at least one of its roles. Otherwise, it's blocked.</li>
+                    </ol>
+                    <p>Remember to evaluate the policy and requests against the policy description <b>as written, not</b> how you <i>think</i> the policy should work.</p>
+                </div>
+
+                    <div class="card border-success mb-3">
+                        <div class="card-header bg-success text-white py-2">These requests should be ACCEPTED</div>
+                        <div class="card-body">
+
+                            <div class="card bg-light p-2 mb-1"><pre class="ltl-spot-trace" data-word="Subject: Person1
+  roles: {Lawyer}
+  inTraining: False
+Action: Read
+Resource: Contract">Subject: Person1
+  roles: {Lawyer}
+  inTraining: False
+Action: Read
+Resource: Contract</pre></div>
+                            <p class="mb-1 small">
+                                This request is <b>allowed</b>. Lawyers are permitted to read contracts, and there is no deny rule that applies.
+                            </p>
+
+                            <hr>
+                            <div class="card bg-light p-2 mb-1"><pre class="ltl-spot-trace" data-word="Subject: Person3
+  roles: {Lawyer, Manager}
+  inTraining: True
+Action: Read
+Resource: Payslip">Subject: Person3
+  roles: {Lawyer, Manager}
+  inTraining: True
+Action: Read
+Resource: Payslip</pre></div>
+                            <p class="mb-1 small">This request is <b>allowed</b>. Managers are permitted to read any resource, and the deny rule only restricts <i>writing</i> payslips (while in training)—not <i>reading</i> them. The fact that lawyers are implicitly denied when reading payslips doesn't matter, because at least one role (manager) is permitted.</p>
+
+                        </div>
+                    </div>
+
+                    <!-- Invalid requests -->
+                    <div class="card border-danger mb-3">
+                        <div class="card-header bg-danger text-white py-2">These requests should be REJECTED
+                        </div>
+                        <div class="card-body">
+
+                            <div class="card bg-light p-2 mb-1"><pre class="ltl-spot-trace" data-word="Subject: Person2
+  roles: {Manager}
+  inTraining: True
+Action: Write
+Resource: Payslip">Subject: Person2
+  roles: {Manager}
+  inTraining: True
+Action: Write
+Resource: Payslip</pre></div>
+                            <p class="mb-1 small">This request is <b>blocked</b>. While managers are generally permitted to write payslips, the deny rule explicitly prevents managers who are in training from writing payslips.</p>
+                            <hr>
+
+                            <div class="card bg-light p-2 mb-1"><pre class="ltl-spot-trace" data-word="Subject: Person3
+  roles: {Lawyer}
+  inTraining: False
+Action: Write
+Resource: Payslip">Subject: Person3
+  roles: {Lawyer}
+  inTraining: False
+Action: Write
+Resource: Payslip</pre></div>
+                            <p class="mb-1 small">This request is <b>blocked</b>. Lawyers are only permitted to access contracts. Since there is no permit rule for lawyers writing payslips, the request is denied by default.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- 6) Proceed -->
+                <p class="fs-5">
+                    Please click the button below once you understand how to read access control requests and evaluate them against policies, and are ready to
+                    proceed.
+                </p>
+
+                <form method="POST" action="{{ url_for('instructions') }}">
+                    <button type="submit" name="understand" value="true" class="btn btn-primary fs-5">
+                        I understand and wish to proceed
+                    </button>
+                    <button type="submit" name="understand" value="false" class="btn btn-secondary fs-5 ms-2">
+                        I do not understand OR wish to exit the study
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

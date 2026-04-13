@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Follow-up Questions</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <style>
+    .interface-label {
+      font-weight: 500;
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .interface-img {
+      display: block;
+      max-width: 560px;
+      margin: 0 auto 1rem auto;
+      border: 2px solid #ced4da;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.05);
+    }
+    .badge.bg-secondary {
+      background-color: #a6a9aa !important;
+      color: #000 !important;
+    }
+    .badge.bg-info {
+      background-color: #0dcaf0;
+    }
+  </style>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h1 class="mb-4">A few final questions</h1>
+  <form method="post">
+
+    <div class="mb-5 fs-5">
+      <label class="form-label fw-semibold">
+        The rules in this study, while expressed in English, described Attribute-based Access Control (ABAC) policies.
+        Have you had any experience with ABAC before this study?
+        <span class="text-danger">*</span>
+      </label>
+      <div class="form-check"><input class="form-check-input" type="radio" name="q1" id="q1_1" value="none" required><label class="form-check-label" for="q1_1">I'm not familiar with ABAC.</label></div>
+      <div class="form-check"><input class="form-check-input" type="radio" name="q1" id="q1_2" value="basic"><label class="form-check-label" for="q1_2">I've heard of ABAC but haven't used or studied it.</label></div>
+      <div class="form-check"><input class="form-check-input" type="radio" name="q1" id="q1_3" value="some"><label class="form-check-label" for="q1_3">I've encountered ABAC in class or in professional settings.</label></div>
+      <div class="form-check"><input class="form-check-input" type="radio" name="q1" id="q1_4" value="advanced"><label class="form-check-label" for="q1_4">I'm confident in reading and reasoning with ABAC policies.</label></div>
+    </div>
+
+    <div class="mb-5 fs-5">
+      <label for="q2" class="form-label fw-semibold">
+        Have you ever encountered or used any tools that involve reasoning about access control policies (e.g. Attribute-, Role-, or Relationship-based Access Control) or systems with permit/deny rules like firewalls?
+        <span class="fw-normal text-muted">(Optional)</span>
+      </label>
+      <textarea id="q2" name="q2" class="form-control" rows="4" placeholder="Your answer..."></textarea>
+    </div>
+
+
+
+    <div class="mb-5 fs-5">
+      <label for="q3" class="form-label fw-semibold">
+        Did you run into any technical issues completing this study? If so, please explain.
+        <span class="fw-normal text-muted">(Optional)</span>
+      </label>
+      <textarea id="q3" name="q3" class="form-control" rows="4" placeholder="Your answer..."></textarea>
+    </div>
+
+    <div class="mb-5 fs-5">
+      <label for="q4" class="form-label fw-semibold">
+        Did you find anything about the instructions or study confusing? If so, please explain.
+        <span class="fw-normal text-muted">(Optional)</span>
+      </label>
+      <textarea id="q4" name="q4" class="form-control" rows="4" placeholder="Your answer..."></textarea>
+    </div>
+
+    <button class="btn btn-primary fs-5">Submit</button>
+  </form>
+</div>
+</body>
+</html>

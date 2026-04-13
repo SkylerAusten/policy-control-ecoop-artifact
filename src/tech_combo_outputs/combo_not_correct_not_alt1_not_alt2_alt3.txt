@@ -1,0 +1,30 @@
+Run: combo_not_correct_not_alt1_not_alt2_alt3
+Return code: 0
+==================================================
+STDOUT:
+Forge version: 4.2.1
+ branch: main
+ commit: dde65092
+ timestamp: Tue Feb 25 16:45:23 2025 +0000
+Forge is up-to-date.
+To report issues with Forge, please visit https://report.forge-fm.org
+Found satisfying instances:
+#(struct:Sat (#hash((Access . ()) (Action . ((Action3))) (Edit . ((Action3))) (Firewall . ()) (NetworkAdmin . ((NetworkAdmin0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((SystemAdmin0) (NetworkAdmin0))) (Server . ((Resource3))) (Subject . ((Subject3))) (SystemAdmin . ((SystemAdmin0))) (True . ((True0))) (isAfterHours . ((Resource3 True0))) (isOnCall . ()) (isPrivileged . ((Action3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 SystemAdmin0))))) ((size-variables 559) (size-clauses 963) (size-primary 70) (time-translation 62) (time-solving 6) (time-building 1759446946411)) ())
+
+
+#(struct:Sat (#hash((Access . ()) (Action . ((Action3))) (Edit . ((Action3))) (Firewall . ()) (NetworkAdmin . ((NetworkAdmin0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((SystemAdmin0) (NetworkAdmin0))) (Server . ((Resource3))) (Subject . ((Subject3))) (SystemAdmin . ((SystemAdmin0))) (True . ((True0))) (isAfterHours . ((Resource3 True0))) (isOnCall . ()) (isPrivileged . ((Action3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 SystemAdmin0) (Subject3 NetworkAdmin0))))) ((size-variables 559) (size-clauses 964) (size-primary 70) (time-translation 62) (time-solving 2) (time-building 1759446946485)) ())
+
+
+#(struct:Sat (#hash((Access . ((Action3))) (Action . ((Action3))) (Edit . ()) (Firewall . ((Resource3))) (NetworkAdmin . ((NetworkAdmin0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((SystemAdmin0) (NetworkAdmin0))) (Server . ()) (Subject . ((Subject3))) (SystemAdmin . ((SystemAdmin0))) (True . ((True0))) (isAfterHours . ((Resource3 True0))) (isOnCall . ()) (isPrivileged . ((Action3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 SystemAdmin0))))) ((size-variables 559) (size-clauses 965) (size-primary 70) (time-translation 62) (time-solving 1) (time-building 1759446946489)) ())
+
+
+#(struct:Sat (#hash((Access . ((Action3))) (Action . ((Action3))) (Edit . ()) (Firewall . ()) (NetworkAdmin . ((NetworkAdmin0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((SystemAdmin0) (NetworkAdmin0))) (Server . ((Resource3))) (Subject . ((Subject3))) (SystemAdmin . ((SystemAdmin0))) (True . ((True0))) (isAfterHours . ((Resource3 True0))) (isOnCall . ()) (isPrivileged . ((Action3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 SystemAdmin0) (Subject3 NetworkAdmin0))))) ((size-variables 559) (size-clauses 966) (size-primary 70) (time-translation 62) (time-solving 2) (time-building 1759446946491)) ())
+
+
+#(struct:Sat (#hash((Access . ((Action3))) (Action . ((Action3))) (Edit . ()) (Firewall . ((Resource3))) (NetworkAdmin . ((NetworkAdmin0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((SystemAdmin0) (NetworkAdmin0))) (Server . ()) (Subject . ((Subject3))) (SystemAdmin . ((SystemAdmin0))) (True . ((True0))) (isAfterHours . ((Resource3 True0))) (isOnCall . ()) (isPrivileged . ((Action3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 SystemAdmin0) (Subject3 NetworkAdmin0))))) ((size-variables 559) (size-clauses 967) (size-primary 70) (time-translation 62) (time-solving 1) (time-building 1759446946494)) ())
+
+
+#(struct:Sat (#hash((Access . ((Action3))) (Action . ((Action3))) (Edit . ()) (Firewall . ()) (NetworkAdmin . ((NetworkAdmin0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((SystemAdmin0) (NetworkAdmin0))) (Server . ((Resource3))) (Subject . ((Subject3))) (SystemAdmin . ((SystemAdmin0))) (True . ((True0))) (isAfterHours . ((Resource3 True0))) (isOnCall . ()) (isPrivileged . ((Action3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 SystemAdmin0))))) ((size-variables 559) (size-clauses 968) (size-primary 70) (time-translation 62) (time-solving 0) (time-building 1759446946496)) ())
+
+
+out of instances

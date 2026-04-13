@@ -1,0 +1,33 @@
+Run: combo_not_correct_not_alt1_not_alt2_alt3
+Return code: 0
+==================================================
+STDOUT:
+Forge version: 4.2.1
+ branch: main
+ commit: dde65092
+ timestamp: Tue Feb 25 16:45:23 2025 +0000
+Forge is up-to-date.
+To report issues with Forge, please visit https://report.forge-fm.org
+Found satisfying instances:
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ((Action3))) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0))) (submitted . ()))) ((size-variables 468) (size-clauses 805) (size-primary 61) (time-translation 54) (time-solving 6) (time-building 1759458063506)) ())
+
+
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ()) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ((Action3))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0) (Subject3 Student0))) (submitted . ((Resource3 True0))))) ((size-variables 468) (size-clauses 806) (size-primary 61) (time-translation 54) (time-solving 1) (time-building 1759458063572)) ())
+
+
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ((Action3))) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0))) (submitted . ((Resource3 True0))))) ((size-variables 468) (size-clauses 807) (size-primary 61) (time-translation 54) (time-solving 1) (time-building 1759458063574)) ())
+
+
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ((Action3))) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0) (Subject3 Student0))) (submitted . ()))) ((size-variables 468) (size-clauses 808) (size-primary 61) (time-translation 54) (time-solving 1) (time-building 1759458063576)) ())
+
+
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ((Action3))) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0) (Subject3 Student0))) (submitted . ((Resource3 True0))))) ((size-variables 468) (size-clauses 809) (size-primary 61) (time-translation 54) (time-solving 1) (time-building 1759458063578)) ())
+
+
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ()) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ((Action3))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0))) (submitted . ()))) ((size-variables 468) (size-clauses 810) (size-primary 61) (time-translation 54) (time-solving 1) (time-building 1759458063580)) ())
+
+
+#(struct:Sat (#hash((Action . ((Action3))) (Assignment . ()) (Exam . ((Resource3))) (Grade . ()) (Professor . ((Professor0))) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Professor0) (TeachingAssistant0) (Student0))) (Student . ((Student0))) (Subject . ((Subject3))) (TeachingAssistant . ((TeachingAssistant0))) (True . ((True0))) (View . ((Action3))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 TeachingAssistant0))) (submitted . ((Resource3 True0))))) ((size-variables 468) (size-clauses 811) (size-primary 61) (time-translation 54) (time-solving 1) (time-building 1759458063582)) ())
+
+
+out of instances

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Access Control Policy Study</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <script src="{{ url_for('static', filename='js/trace-renderer.js') }}"></script>
+  <style>
+    .trace-item {
+      display: flex;
+      flex-direction: column;
+      padding: .5rem 1rem;
+    }
+    .trace-text { font-weight: 500; }
+    .card + .card { margin-top: 1rem; }
+    .varname { font-weight: 600; color: #333; font-family: "trebuchet ms",verdana,arial,sans-serif;}
+    .description-box {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    /* Request styling classes */
+    .request-subject {
+        color: #4169e1;
+        font-weight: bold;
+    }
+
+    .request-action {
+        color: #F26035;
+    }
+
+    .request-resource {
+        color: #009B55;
+        font-style: italic;
+    }
+  </style>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="mb-3">Review Your Classifications</h1>
+    <!-- {% if reason_message %}
+    <p class="reason-msg fw-semibold mb-3 fs-5">{{ reason_message | safe }}</p>
+    {% endif %} -->
+    <!-- <p class="text-muted mb-4 fs-5">
+      Below is an LTL formula. You previously classified the traces based on whether they satisfy it.
+
+    </p> -->
+
+    <!-- LTL formula description -->
+    <div class="mb-4 fs-5">
+      <p class="mb-2 text-muted">This page shows you all of your classifications for the rule:</p>
+      <div class="form-control fs-5 description-box" rows="3" readonly>{{ text_description|safe }}</div>
+      <p class="mt-2 mb-2 text-muted">Reclassify any trace to <u>if needed</u> before continuing. <b>You can click on any trace to enlarge it.</b></p>
+    </div>
+
+    <div class="row g-4">
+    {% for category, traces in {
+            "accept": accepted_words,
+            "reject":  rejected_words,
+            "unsure":    unsure_words
+         }.items() %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header text-bg-light">
+            <h5 class="mb-0">{{ category|capitalize }}</h5>
+          </div>
+          <ul class="list-group list-group-flush" id="{{ category }}-list">
+          {% for trace in traces %}
+            <li class="list-group-item trace-item">
+              <div class="w-100 mb-2">
+                <span class="trace-text ltl-spot-trace">{{ trace }}</span>
+              </div>
+              <div class="w-100">
+                <select class="form-select form-select-sm reclassify-dropdown"
+                        data-trace="{{ trace }}">
+                  <option value="accept" {% if category == "accept" %}selected{% endif %}>Accepted</option>
+                  <option value="reject"  {% if category == "reject"  %}selected{% endif %}>Rejected</option>
+                  <option value="unsure"    {% if category == "unsure"    %}selected{% endif %}>Unsure</option>
+                </select>
+              </div>
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+
+    <div class="mt-5 text-center">
+      <button id="approveBtn" class="btn btn-primary btn-lg">
+        Approve and Continue
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const SESSION_ID = {{ session_id|int }};
+    const approveBtn = document.getElementById('approveBtn');
+    const selects = Array.from(document.querySelectorAll('.reclassify-dropdown'));
+
+    const lists = {
+      accept : document.getElementById('accept-list'),
+      reject  : document.getElementById('reject-list'),
+      unsure  : document.getElementById('unsure-list')
+    };
+
+    function sanitizeTraceForDisplay(trace) {
+      return trace.replace(/[\x00-\x1F]/g, ' ');
+    }
+
+    // Initialize trace renderer
+    let traceRenderer;
+    traceRenderer = new TraceRenderer();
+    traceRenderer.renderAllTraces({ 
+      showLabels: false, 
+      compactMode: true,
+      highlightCycle: true 
+    });
+
+    // Keep original sanitization for non-trace elements
+    document.querySelectorAll('.trace-text:not(.ltl-spot-trace)').forEach(span => {
+      span.textContent = sanitizeTraceForDisplay(span.textContent);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const descBox = document.querySelector("div.form-control");
+      if (descBox) {
+        descBox.style.height = "auto";
+        descBox.style.height = descBox.scrollHeight + "px";
+      }
+    });
+
+    function lockUI(on = true) {
+      approveBtn.disabled = on;
+      selects.forEach(sel => sel.disabled = on);
+    }
+
+    async function safeJson (response) {
+      try {
+        const t = await response.clone().text();
+        return t.trim() ? JSON.parse(t) : null;
+      } catch { return null; }
+    }
+
+    function followRedirect(response, fallback = '/study') {
+      if (response.type === 'opaqueredirect' ||
+          (response.status >= 300 && response.status < 400)) {
+        window.location.href = fallback;
+        return true;
+      }
+      return false;
+    }
+
+    selects.forEach(select => {
+      select.addEventListener('change', async () => {
+        const prevLabel = Array.from(select.options).find(o => o.defaultSelected).value;
+        const newLabel = select.value;
+        const li = select.closest('li');
+        const trace = select.dataset.trace;
+
+        lockUI(true);
+
+        try {
+          const res = await fetch('/reclassify', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({
+              session_id         : SESSION_ID,
+              word               : trace,
+              new_classification : newLabel,
+              classification_type: 'review'
+            })
+          });
+
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+          lists[newLabel].appendChild(li);
+
+          Array.from(select.options).forEach(o => {
+            o.defaultSelected = (o.value === newLabel);
+          });
+
+        } catch (err) {
+          console.warn('Failed to reclassify:\n' + err.message);
+          select.value = prevLabel;
+          location.reload();
+        } finally {
+          lockUI(false);
+        }
+      });
+    });
+
+    approveBtn.addEventListener('click', async () => {
+      if (approveBtn.disabled) return;
+      lockUI(true);
+      approveBtn.textContent = 'Please wait…';
+
+      try {
+        const res = await fetch('/review', { method:'POST' });
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
+
+        const data = await safeJson(res);
+        if (data?.redirect) {
+          window.location.href = data.redirect;
+          return;
+        }
+
+        window.location.href = '/study';
+      } catch (err) {
+        console.warn('Unable to continue:\n' + err.message);
+        approveBtn.textContent = 'Approve and Continue';
+        lockUI(false);
+      }
+    });
+  </script>
+</body>
+</html>

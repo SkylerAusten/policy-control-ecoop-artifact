@@ -1,0 +1,78 @@
+Run: combo_not_correct_not_alt1_alt2_not_alt3
+Return code: 0
+==================================================
+STDOUT:
+Forge version: 4.2.1
+ branch: main
+ commit: dde65092
+ timestamp: Tue Feb 25 16:45:23 2025 +0000
+Forge is up-to-date.
+To report issues with Forge, please visit https://report.forge-fm.org
+Found satisfying instances:
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 968) (size-primary 70) (time-translation 70) (time-solving 5) (time-building 1759446937244)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ()))) ((size-variables 557) (size-clauses 969) (size-primary 70) (time-translation 70) (time-solving 2) (time-building 1759446937327)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 970) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937330)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ()))) ((size-variables 557) (size-clauses 971) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937333)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 972) (size-primary 70) (time-translation 70) (time-solving 2) (time-building 1759446937336)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 973) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937339)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ()))) ((size-variables 557) (size-clauses 974) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937342)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 975) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937345)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ()))) ((size-variables 557) (size-clauses 976) (size-primary 70) (time-translation 70) (time-solving 2) (time-building 1759446937348)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 977) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937351)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0) (Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 978) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937353)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 979) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937355)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ()))) ((size-variables 557) (size-clauses 980) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937357)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 981) (size-primary 70) (time-translation 70) (time-solving 0) (time-building 1759446937361)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ()))) ((size-variables 557) (size-clauses 982) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937363)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 983) (size-primary 70) (time-translation 70) (time-solving 0) (time-building 1759446937365)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ()))) ((size-variables 557) (size-clauses 984) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937367)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 985) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937369)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ()))) ((size-variables 557) (size-clauses 986) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937371)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ((Subject3 True0))) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 987) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937374)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ()) (LegalDocument . ((Resource3))) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 988) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937377)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Admin0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 989) (size-primary 70) (time-translation 70) (time-solving 1) (time-building 1759446937379)) ())
+
+
+out of instances

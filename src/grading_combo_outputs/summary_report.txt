@@ -1,0 +1,21 @@
+Policy Combination Summary Report
+==================================================
+
+c 1 2 3    | Result              
+-----------------------------------
+0 0 0 0    | SAT (8)             
+0 0 0 1    | SAT (7)             
+0 0 1 0    | SAT (9)             
+0 0 1 1    | SAT (3)             
+0 1 0 0    | UNSAT               
+0 1 0 1    | UNSAT               
+0 1 1 0    | UNSAT               
+0 1 1 1    | UNSAT               
+1 0 0 0    | UNSAT               
+1 0 0 1    | UNSAT               
+1 0 1 0    | UNSAT               
+1 0 1 1    | SAT (7)             
+1 1 0 0    | UNSAT               
+1 1 0 1    | UNSAT               
+1 1 1 0    | SAT (7)             
+1 1 1 1    | SAT (15)            

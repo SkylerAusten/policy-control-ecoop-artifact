@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Access Control Policy Study</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <!-- Mermaid disabled - now showing raw text -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script> -->
+
+<!-- Load your trace renderer -->
+<script src="{{ url_for('static', filename='js/trace-renderer.js') }}"></script>
+
+<!-- Initialize on page load -->
+<script>
+    TraceRenderer.init();
+</script>
+  <style>
+    .pane { border: 1px solid #ccc; border-radius: .5rem; padding: 1rem; margin-top: 1rem; }
+    .word-box { font-weight: normal; margin-bottom: 1rem; }
+    .btn-group { display: flex; gap: .5rem; width: 100%; }
+    .btn-group>* { flex: 1; }
+    .policy-code { font-family: "Courier New", Courier, monospace; color: #000;}
+    .list-group-item.opacity-75 { cursor: not-allowed; }
+    .formula-list { font-size: .85rem;}
+    .varname { font-weight: 600; color: #333; font-family: "trebuchet ms",verdana,arial,sans-serif;}
+    .formula-list .list-group-item {
+      padding: .25rem .5rem;
+      display: flex;
+      align-items: center;
+    }
+    .formula-list code { font-size: inherit; color:#000; }
+    .formula-list .eliminated {
+      background-color:#f8f9fa !important;
+      color:#8e9296 !important;
+    }
+    {% if not show_labels %}.formula-badges { display: none}{% endif %}
+    .formula-badges .badge { font-size: .75rem; margin: 0 .125rem }
+    .formula-badges .symbol {
+      line-height: 1;
+    }
+  .formula-list .eliminated .badge{
+    background-color: #000;
+  }
+  .eliminated .badge {
+    background-color:#a6a9aa !important;
+    color:#000;
+  }
+  #studyTourOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 4000;
+  }
+
+  .overlay-backdrop {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.65);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 4001;
+  }
+
+  .overlay-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 60px;
+  background: white;
+  border-bottom: 2px solid #007bff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 999999;
+}
+
+#overlay-text {
+  flex: 1;
+  margin-right: 15px;
+  font-size: 14px;
+}
+
+#overlay-next {
+  align-self: center;
+}
+
+  .tour-highlight {
+    position: relative;
+    z-index: 4100; /* highest of all */
+    box-shadow: 0 0 0 4px #0d6efd, 0 0 15px 5px rgba(13, 110, 253, 0.4);
+    border-radius: .5rem;
+    transition: box-shadow 0.3s ease;
+  }
+  .tour-disabled {
+    pointer-events: none;
+  }
+  .full-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .full-overlay-box {
+    background: white;
+    padding: 2rem 3rem;
+    border-radius: .75rem;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    max-width: 90%;
+  }
+  .description-box {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  /* Request styling classes */
+  .request-subject {
+      color: #4169e1;
+      font-weight: bold;
+  }
+
+  .request-action {
+      color: #F26035;
+  }
+
+  .request-resource {
+      color: #009B55;
+      font-style: italic;
+  }
+  </style>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body class="bg-light" data-session="{{ session_id }}">
+<div class="container mt-5">
+  <!-- Natural-language description -->
+  <div class="mb-2">
+
+    <div class="mb-2">
+      <h3>Classify each request based on whether it matches the following rule.</h3>
+      <p class="text-muted mb-2">Each request is independent. Both, neither, or just one could match the description. <b>You can click on any request to enlarge it.</b></p>
+      <br>
+    </div>
+
+    <div class="form-control fs-5 description-box" rows="3" readonly>{{ text_description|safe }}</div>
+  </div>
+
+  <!-- Two classification panes -->
+  <div class="row">
+    {% for w,id in [(word1,'pane-word1'), (word2,'pane-word2')] %}
+      <div class="col-md-6">
+        <div id="{{ id }}" class="pane bg-white shadow-sm">
+          <div class="word-box text-start fs-4 ltl-spot-trace" data-word="{{ w | safe }}">{{ w }}</div>
+          <div class="text-center mb-2 formula-badges" data-full="1">
+            <strong>Matches:&nbsp;</strong>
+            {% for reg in formula_with_ids if reg.id in word_matches[w] %}
+              <span class="badge {{ 'bg-info' if reg.in_play else 'bg-secondary' }} me-1">
+                {{ reg.id }}
+              </span>
+            {% endfor %}
+            <span class="mx-2"></span>
+
+            <strong>Doesn't&nbsp;match:&nbsp;</strong>
+            {% for reg in formula_with_ids if reg.id not in word_matches[w] %}
+              <span class="badge {{ 'bg-info' if reg.in_play else 'bg-secondary' }} me-1">
+                {{ reg.id }}
+              </span>
+            {% endfor %}
+          </div>
+          <form class="classify-form"
+                data-word="{{ w }}"
+                data-pane="{{ id }}">
+            <div class="btn-group">
+              <button class="btn btn-success fs-5" value="accept">Accept</button>
+              <button class="btn btn-danger fs-5"  value="reject">Reject</button>
+              <button class="btn btn-secondary fs-5" value="unsure">Unsure</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Candidate LTL formulas -->
+  <div class="pane bg-white shadow-sm p-2"{% if not show_candidates %} style="display: none;"{% endif %}>
+    <h5 class="fw-semibold mb-2">Candidate access control policies</h5>
+
+    <ul class="list-group list-group-flush formula-list">
+      {% for r in formula_with_ids %}
+        <li class="fs-6 list-group-item{% if not r.in_play %} eliminated{% endif %}" data-rid="{{ r.id }}">
+          <span class="badge bg-info me-2 flex-shrink-0">{{ r.id }}</span>
+          <div>{{ r.expr|safe }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Latest-state buckets -->
+  <h4 class="mt-4">Your Classifications</h4>
+  <div class="row">
+    {% for bucket, label in [(accepted_words,'Accepted'),
+                            (rejected_words,'Rejected'),
+                            (unsure_words,'Unsure')] %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header text-bg-light"><h5 class="mb-0">{{ label }}</h5></div>
+          <ul id="{{ label|lower }}-list" class="list-group list-group-flush">
+            {% for word in bucket %}
+            <li class="list-group-item d-flex flex-column align-items-start">
+              <div class="w-100 mb-2">
+                <span class="ltl-spot-trace" data-word="{{ word }}">{{ word | safe}}</span>
+              </div>
+              <div class="w-100">
+                <select class="form-select form-select-sm reclassify"
+                        name="classify-{{ word }}"
+                        data-word="{{ word }}">
+                  <option value="accept" {% if label=='Accepted' %}selected{% endif %}>Accept</option>
+                  <option value="reject" {% if label=='Rejected' %}selected{% endif %}>Reject</option>
+                  <option value="unsure" {% if label=='Unsure' %}selected{% endif %}>Unsure</option>
+                </select>
+              </div>
+              <div class="formula-badges text-center mt-1">
+                <span class="fw-semibold">M:&nbsp;</span>
+                {% for r in formula_with_ids %}
+                  {% if r.id in word_matches[word] %}
+                    <span class="badge {{ 'bg-info' if r.in_play else 'bg-secondary' }} me-1">{{ r.id }}</span>
+                  {% endif %}
+                {% endfor %}
+                <span class="mx-1"></span>
+                <span class="fw-semibold">DM:&nbsp;</span>
+                {% for r in formula_with_ids %}
+                  {% if r.id not in word_matches[word] %}
+                    <span class="badge {{ 'bg-info' if r.in_play else 'bg-secondary' }} me-1">{{ r.id }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Fullscreen Notification Overlay -->
+{% if (first_in_session and not first_run) or from_review %}
+  <div id="fullScreenNotice" class="full-overlay">
+    <div class="full-overlay-box">
+      <div class="fs-5">
+        {% if first_in_session %}
+          <strong>Moving onto a new problem!</strong><br>
+          Read the rule description before you continue.
+        {% elif from_review %}
+          <strong>Returning to the previous problem!</strong><br>
+          More classifications are needed to continue.
+        {% endif %}
+      </div>
+      <button class="btn btn-primary mt-4" onclick="dismissOverlay()">Continue</button>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Study Tour Modal (moved to end of <body>) -->
+  <div id="studyTourOverlay" style="display:none;">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-box">
+      <div id="overlay-text" class="mb-3"></div>
+      <button class="btn btn-primary" id="overlay-next">Next</button>
+    </div>
+  </div>
+
+
+<!-- Bootstrap bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  /* ============================================================================
+     Globals & helpers
+  ============================================================================ */
+  const SESSION_ID = document.body.dataset.session;      // session_id from Flask
+  const WORD_MATCHES = {{ word_matches|tojson }};   //  {word: [rid, …]}
+  // TODO: This should be in session storage.
+
+  function sanitizeWordForDisplay(word) {
+    // Replace all control characters (U+0000–U+001F) with " ".
+    // TODO: Move this to a helper JS file.
+    if (word === '') {
+      return '<em class="text-muted">&lt;empty string&gt;</em>';
+    }
+
+    return word.replace(/[\x00-\x1F]/g, ' ');
+  }
+
+  // Initialize trace renderer
+  let traceRenderer;
+  document.addEventListener("DOMContentLoaded", () => {
+    traceRenderer = new TraceRenderer();
+    traceRenderer.renderAllTraces({ 
+      showLabels: false, 
+      compactMode: true,
+      highlightCycle: true 
+    });
+  });
+
+  // On load, sanitize classification pane words (now handled by trace renderer)
+  document.querySelectorAll('.word-box:not(.ltl-spot-trace)').forEach(box => {
+    const raw = box.dataset.word;
+    box.innerHTML = sanitizeWordForDisplay(raw);
+  });
+
+  // On load, resize the rule description text box.
+  document.addEventListener("DOMContentLoaded", () => {
+    const descBox = document.querySelector("div.form-control");
+    if (descBox) {
+      // Set height to auto first to get accurate scrollHeight
+      descBox.style.height = "auto";
+      // Then set height to fit content
+      descBox.style.height = descBox.scrollHeight + "px";
+    }
+  });
+
+
+  // Formula candidate lookup helper.
+  const formulaItems = {};
+  document.querySelectorAll('.formula-list .list-group-item').forEach(li => {
+    formulaItems[li.dataset.rid] = li;
+  });
+
+  // Add event listener for when the user reclassifies a word.
+  document.addEventListener('change', ev => {
+    const sel = ev.target;
+    if (sel.matches('.reclassify')) {
+      handleReclassify(sel);
+    }
+  });
+
+  // Returns parsed JSON or null if body is empty / not-JSON
+  async function safeJSON (response){
+    try{
+      const text = await response.clone().text();        // don’t consume body
+      return text.trim() ? JSON.parse(text) : null;
+    }catch{ return null; }
+  }
+
+  function dismissOverlay() {
+    const overlay = document.getElementById('fullScreenNotice');
+    if (overlay) overlay.remove();
+
+    // Remove 'from_review' from URL without reloading.
+    const url = new URL(window.location);
+    url.searchParams.delete('from_review');
+    window.history.replaceState({}, document.title, url);
+  }
+
+
+  // Quick lookup dict for the three bucket list items.
+  const lists = {
+    accept : document.getElementById('accepted-list'),
+    reject : document.getElementById('rejected-list'),
+    unsure : document.getElementById('unsure-list')
+  };
+
+  // Update the enabled/disabled status of elements.
+  const updateElemUsability = (sel, on = true) =>
+    document.querySelectorAll(sel).forEach(el => el.disabled = on);
+
+  function htmlBadges(word, fullLabels = false){
+    const matches = new Set(WORD_MATCHES[word] || []);
+    let out = '<div class="formula-badges text-center mt-1">';
+
+    if (fullLabels) {
+      out += '<strong>Matches:&nbsp;</strong>';
+    } else {
+      out += '<span class="fw-semibold">M:&nbsp;</span>';
+    }
+
+    for (const [rid, li] of Object.entries(formulaItems)){
+      if (matches.has(rid)){
+        out += `<span class="badge ${li.classList.contains('eliminated') ? 'bg-secondary':'bg-info'} me-1">${rid}</span>`;
+      }
+    }
+
+    if (fullLabels) {
+      out += '<span class="mx-2"></span><strong>Doesn’t&nbsp;match:&nbsp;</strong>';
+    } else {
+      out += '<span class="mx-1"></span><span class="fw-semibold">DM:&nbsp;</span>';
+    }
+
+    for (const [rid, li] of Object.entries(formulaItems)){
+      if (!matches.has(rid)){
+        out += `<span class="badge ${li.classList.contains('eliminated') ? 'bg-secondary':'bg-info'} me-1">${rid}</span>`;
+      }
+    }
+
+    return out + '</div>';
+  }
+
+
+  function updateFormulaDisplay(formulaList) {
+    // (1) update the main candidate list
+    for (const r of formulaList) {
+      const li = formulaItems[r.id];
+      if (!li) continue;
+      r.in_play ? unmute(li) : mute(li);
+    }
+
+    // (2) rebuild every .formula-badges block
+    document.querySelectorAll('.formula-badges').forEach(container => {
+      const word =
+            container.closest('li')?.querySelector('[data-word]')?.dataset.word
+        || container.closest('.pane')?.querySelector('.word-box')?.dataset.word;
+      if (!word) return;
+
+      const fullLabels = container.dataset.full === '1';
+      container.innerHTML = htmlBadges(word, fullLabels);
+    });
+  }
+
+
+
+
+  // Build the <li> element that lives in a bucket list
+  function makeBucketItem (word, initialLabel) {
+    // Create a list item.
+    const li = document.createElement('li');
+
+    // Set its class to be like all other list items.
+    li.className =
+      'list-group-item d-flex flex-column align-items-start';
+
+    // Update the item's HTML.
+    li.innerHTML = `
+    <div class="w-100 mb-2">
+        <span class="ltl-spot-trace" data-word="${word}">${word}</span>
+    </div>
+    <div class="w-100">
+        <select class="form-select form-select-sm reclassify"
+                name="classify-${word}"
+                data-word="${word}">
+          <option value="accept" ${initialLabel==='accept' ? 'selected' : ''}>Accept</option>
+          <option value="reject" ${initialLabel==='reject' ? 'selected' : ''}>Reject</option>
+          <option value="unsure" ${initialLabel==='unsure' ? 'selected' : ''}>Unsure</option>
+        </select>
+    </div>
+    ${htmlBadges(word)}`;
+
+    const sel = li.querySelector('.reclassify');
+
+    // Ensure the CLOSED dropdown shows the right value.
+    sel.value = initialLabel;
+
+    // Render trace for the new element with magnification support
+    if (traceRenderer) {
+        const traceElement = li.querySelector('.ltl-spot-trace');
+        
+        // Set the data-word attribute for the trace renderer
+        traceElement.setAttribute('data-word', word);
+        
+        // Manually render this specific element (not all traces)
+        const parsed = traceRenderer.parseTrace(word);
+        const rendered = traceRenderer.renderTrace(parsed, { 
+            showLabels: false, 
+            compactMode: true,
+            highlightCycle: true 
+        }, word);
+        
+        traceElement.innerHTML = rendered;
+        traceElement.setAttribute('data-original', word);
+        traceElement.classList.add('ltl-trace-rendered');
+        
+        // Add click handler for magnification
+        traceElement.addEventListener('click', () => {
+            traceRenderer.showMagnifiedTrace(word, word);
+        });
+    }
+
+    // Add reclassify event handler to the new list item.
+    sel.addEventListener('change', e => handleReclassify(e.target));
+
+    return li;
+  }
+
+  function mute(li)  { li.classList.add('eliminated'); }
+  function unmute(li){ li.classList.remove('eliminated'); }
+
+  /* ============================================================================
+    Handle classification of the two generated words.
+    Note: Refresh only after BOTH have been answered!
+  ============================================================================ */
+  let classifiedCount = 0;   // 0 → none answered yet
+
+  document.querySelectorAll('.classify-form').forEach(form => {
+    form.addEventListener('submit', async ev => {
+      ev.preventDefault();
+
+      const btn   = ev.submitter;            // button clicked
+      const word  = form.dataset.word;
+      const pane  = form.dataset.pane;
+      const label = btn.value;               // accept / reject / unsure
+      const n     = ++classifiedCount;       // 1st or 2nd submission on the page
+
+      // Disable all buttons and dropdowns during fetch
+      updateElemUsability('.classify-form button', true);
+      updateElemUsability('.reclassify', true);
+
+      try {
+        const res = await fetch('/classify', {
+          method : 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body   : JSON.stringify({
+                    word,
+                    classification   : label,
+                    session_id       : SESSION_ID,
+                    study_problem_id : {{ study_problem_id|tojson }},
+                    submission_number: n
+                  })
+        });
+
+        if (!res.ok) {                       // any non-2xx → bail out
+          const msg = await res.text();
+          throw new Error(`HTTP ${res.status} – ${msg || 'no body'}`);
+        }
+
+        /* -------- success path --------------------------------------------- */
+        const data = await safeJSON(res) || {};
+
+        // (1) update badge colours if server sent new formula status
+        if (data.formulas) {
+          updateFormulaDisplay(data.formulas);  // Changed from data.regexes
+        }
+
+        // (2) hop to /review if the server says we’re ready
+        if (data.redirect) {
+          window.location.href = data.redirect;
+          return;
+        }
+
+        // (3) local DOM changes (only matter when we stay on /study)
+        lists[label].appendChild(makeBucketItem(word, label)); // move to bucket
+        
+        // Hide the entire column containing the pane (instead of removing it)
+        const paneElement = document.getElementById(pane);
+        if (paneElement) {
+          const columnElement = paneElement.closest('.col-md-6');
+          if (columnElement) {
+            // Hide the column but keep it in the DOM to preserve layout
+            // columnElement.style.display = 'none';
+            columnElement.style.visibility = 'hidden';
+          } else {
+            paneElement.remove(); // fallback to just removing the pane
+          }
+        }
+
+        // reload after the second classification to fetch a new pair
+        if (n === 2) {
+          console.log("Both classifications done; reloading.");
+          location.reload();
+        }
+
+      } catch (err) {
+        console.warn('Submission failed; reloading.\n' + err.message);
+        location.reload();
+      } finally {
+        // Re-enable UI after fetch.
+        updateElemUsability('.classify-form button', false);
+        updateElemUsability('.reclassify', false);
+      }
+    });
+  });
+
+  /* ============================================================================
+     Handle live re-classification of bucket items.
+  ============================================================================ */
+  let reclassifyBusy = false; // Global to check if already busy with reclassification.
+
+  async function handleReclassify(select){
+    if (reclassifyBusy) return;
+    reclassifyBusy = true;
+    updateElemUsability('.reclassify', true);
+
+    const word  = select.dataset.word;
+    const label = select.value;
+
+    // Disable all dropdowns and classification buttons
+    updateElemUsability('.reclassify', true);
+    updateElemUsability('.classify-form button', true);
+
+    try{
+      const res = await fetch('/reclassify', {
+        method : 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body   : JSON.stringify({
+                  word,
+                  new_classification : label,
+                  session_id         : SESSION_ID,
+                  classification_type: 'reclassify'
+                })
+      });
+
+      if (res.ok){
+        // The body should be empty, but check for a redirect anyway.
+        const data = await safeJSON(res);
+        if (data?.redirect) {
+          window.location.href = data.redirect;
+          return;
+        }
+        if (data?.formulas) {
+          updateFormulaDisplay(data.formulas);
+        }
+
+
+        // If success & no redirect, move li to the correct column.
+        const li = select.closest('li'); // Grab the reclassified list item.
+        lists[label].appendChild(li);
+
+        // Update the drop-down's value.
+        select.value = label;
+        // TODO: Remove?
+        // Array.from(select.options).forEach(
+        //       o => o.defaultSelected = (o.value === label));
+
+      } else {
+        const msg = await res.text();
+        throw new Error(`HTTP ${res.status} - ${msg || 'no body'}`);
+      }
+
+    } catch (err){
+        console.warn('Submission failed:\n' + err.message + '\n\n(reloading page...)');
+        location.reload();
+    } finally {
+      reclassifyBusy = false;
+      updateElemUsability('.reclassify', false);
+      updateElemUsability('.classify-form button', false);
+    }
+  }
+
+  // Study Tour Modal
+  function startTour() {
+    const steps = [
+      {
+        el: document.querySelector('div.form-control'),         // rule description
+        text: "Read the rule description carefully. <b>Only accept requests that match the rule.</b>",
+      },
+      {
+        el: [
+          document.getElementById('pane-word1'),
+          document.getElementById('pane-word2')
+        ],
+        text: "Classify each request by choosing whether it matches the rule.",
+      },{% if show_candidates %}
+      {
+        el: document.querySelector('.formula-list'),
+        text: `
+          These are the candidate access control policies.
+          <span class="badge bg-info">Blue</span> means the policy is still in play and could be correct.
+          <span class="badge bg-secondary">Gray</span> means it has been ruled out based on your classifications.
+        `
+      },{% endif %}
+      {
+        el: document.querySelector('#accepted-list').closest('.row'),  // Final classification buckets
+        text: "Here you can see and change your earlier classifications.",
+      }
+    ];
+
+    const overlay = document.getElementById('studyTourOverlay');
+    const textBox = document.getElementById('overlay-text');
+    const nextBtn = document.getElementById('overlay-next');
+    const box = document.querySelector('.overlay-box');
+
+    let current = 0;
+
+    function showStep(i) {
+      // Remove previous highlights
+      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+
+      const step = steps[i];
+      const targets = Array.isArray(step.el) ? step.el : [step.el];
+
+      // Highlight current targets
+      for (const el of targets) {
+        if (el) el.classList.add('tour-highlight');
+      }
+
+      const first = targets[0];
+      if (!first) return;
+
+      // Calculate combined bounding box for multiple targets (for scrolling, not positioning)
+      let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
+      targets.forEach(el => {
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          minLeft = Math.min(minLeft, rect.left);
+          minTop = Math.min(minTop, rect.top);
+          maxRight = Math.max(maxRight, rect.right);
+          maxBottom = Math.max(maxBottom, rect.bottom);
+        }
+      });
+
+      const combinedRect = {
+        left: minLeft,
+        top: minTop,
+        right: maxRight,
+        bottom: maxBottom,
+        width: maxRight - minLeft,
+        height: maxBottom - minTop
+      };
+
+      textBox.innerHTML = '<h5 class="text-primary mb-2">Interface Walkthrough</h5>' + step.text;
+
+      // Anchor to top of screen for guaranteed visibility
+      const boxHeight = Math.max(box.offsetHeight || 120, 80); // Reduced minimum height for compactness
+      const boxWidth = Math.max(box.offsetWidth || 800, 600); // Increased minimum width for wideness
+      const margin = 10;
+
+      // Fixed positioning at top-center
+      const topPos = margin;  // Fixed at top with small margin
+      const leftPos = (window.innerWidth - boxWidth) / 2;  // Center horizontally
+
+      // Ensure box stays within viewport (additional safety)
+      const adjustedLeft = Math.max(0, Math.min(leftPos, window.innerWidth - boxWidth));
+
+      box.style.position = 'fixed';  // Fixed positioning
+      box.style.top = `${topPos}px`;
+      box.style.left = `${adjustedLeft}px`;
+      box.style.zIndex = '999999';  // Extremely high z-index to always win
+      box.style.width = `${boxWidth}px`;  // Explicit width for wideness
+      box.style.height = `${boxHeight}px`;  // Explicit height for compactness
+      box.style.padding = '8px 15px';  // Reduced padding for vertical compactness
+      box.style.display = 'flex';  // Flex layout for horizontal arrangement
+      box.style.alignItems = 'center';  // Center content vertically
+      box.style.justifyContent = 'space-between';  // Space text and button
+
+      // Style the text box for compactness
+      textBox.style.flex = '1';  // Take available space
+      textBox.style.marginRight = '15px';  // Space before button
+      textBox.style.fontSize = '14px';  // Smaller font for compactness
+
+      // Scroll the first target into view smoothly
+      first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Ensure button is interactive (reinforce z-index and pointer-events)
+      const nextBtn = document.getElementById('overlay-next');
+      if (nextBtn) {
+        nextBtn.style.pointerEvents = 'auto';
+        nextBtn.style.zIndex = '1000000';  // Even higher for button
+        nextBtn.style.alignSelf = 'flex-end';  // Align button to end
+      }
+    }
+
+    nextBtn.addEventListener('click', () => {
+      current++;
+      if (current < steps.length) {
+        showStep(current);
+      } else {
+        // End tour:
+        // Remove of the tour overlay.
+        overlay.style.display = 'none';
+        document.body.style.overflow = ''; // allow scrolling again
+
+        // Remove highlight from all elements
+        document.querySelectorAll('.tour-highlight').forEach(el =>
+          el.classList.remove('tour-highlight')
+        );
+
+        // Re-enable classification buttons after tour
+        document.querySelectorAll('.classify-form button').forEach(btn => {
+          btn.classList.remove('tour-disabled');
+        });
+
+        // ✅ Notify backend that walkthrough is complete
+        fetch("/mark_walkthrough_complete", {
+          method: "POST"
+        });
+      }
+    });
+
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    document.querySelectorAll('.classify-form button').forEach(btn => {
+      btn.classList.add('tour-disabled');
+    });
+
+    showStep(0);
+
+  }
+
+  /* ============================================================================
+    Show toast on the first classification of the session or on kickback from /review.
+  ============================================================================ */
+  {% if first_run %}
+    document.addEventListener("DOMContentLoaded", () => {
+      // Giving the resize time to happen.
+      startTour();
+    });
+  {% endif %}
+</script>
+</body>
+</html>

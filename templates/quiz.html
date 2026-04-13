@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Practice Quiz — Access Control Policy Study</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
+  
+  <!-- Load trace renderer for styling HospitalRequests -->
+  <script src="{{ url_for('static', filename='js/trace-renderer.js') }}"></script>
+  
+  <style>
+    .quiz-item { border:1px solid #e9ecef; border-radius:.5rem; padding:1rem; background:#fff; }
+    .feedback { min-height:1.5rem; }
+    .done-badge { display:none; }
+  /* emoji result styles */
+  .emoji-result { font-size:2.4rem; line-height:1; vertical-align:middle; margin-right:.5rem; }
+  .emoji-success { filter: drop-shadow(0 4px 8px rgba(0,128,0,0.18)); }
+  /* use a neutral "diff" style for incorrect to avoid conflation with Reject */
+  .emoji-diff { filter: drop-shadow(0 4px 8px rgba(120,120,120,0.12)); color:#6c757d; }
+  .feedback-text { display: inline-block; font-weight:600; margin-left:.5rem; vertical-align:middle; }
+  /* Request styling classes */
+  .request-subject {
+      color: #4169e1;
+      font-weight: bold;
+  }
+
+  .request-action {
+      color: #F26035;
+  }
+
+  .request-resource {
+      color: #009B55;
+      font-style: italic;
+  }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="card shadow">
+      <div class="card-body">
+        <h4>Test Your Understanding</h4>
+        <p class="mb-3">Classify each access control request based on whether it should be accepted or rejected according to the policy below.</p>
+
+
+        <div class="mb-4">
+
+          <div class="form-control fs-5 bg-light border-secondary border-2" style="min-height:3em;">
+            <b>Managers can...</b> 
+            <p>- read any resource</p>
+            <p>- write payslips, unless they're in training.</p>
+            <b>Lawyers can...</b> 
+            <p>- read and write contracts.</p>
+          </div>
+          <br>
+          <div class="form-control fs-5 bg-light border-secondary border-2">
+            <pre class="mb-0" style="white-space: pre-wrap; word-break: break-word;">permits = { 
+  (<span class="request-subject">role</span> = Manager and <span class="request-action">act</span> = Read) or
+  (<span class="request-subject">role</span> = Manager and <span class="request-action">act</span> = Write and <span class="request-resource">res</span> = Payslip) or
+  (<span class="request-subject">role</span> = Lawyer and <span class="request-resource">res</span> = Contract)
+}
+
+denies  = {
+  (<span class="request-subject">role</span> = Manager and <span class="request-action">act</span> = Write and <span class="request-resource">res</span> = Payslip and <span class="request-subject">sub</span>.inTraining = True)
+}</pre>
+          </div>
+        </div>
+
+        <div id="quiz-items" class="d-grid gap-3 mb-3"></div>
+
+        <div id="quiz-controls" class="d-flex justify-content-between align-items-center">
+          <div>
+            <span id="progress" class="text-muted">0 / 4 answered</span>
+          </div>
+        </div>
+        
+        <!-- Proceed block shown after last question is answered -->
+        <div id="proceed-block" class="mt-3" style="display:none;">
+          <p class="fs-5">
+            Click Proceed to move on to the next classification task. This will begin with a brief UI walkthrough.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+
+    const QUIZ_EXAMPLES = [
+      {
+        request: `Subject: Person2
+  roles: {Lawyer, Manager}
+  inTraining: True
+Action: Read
+Resource: Contract`,
+        correct: "accept",
+        explain: "This request is <b>allowed</b>. Lawyers are permitted to read contracts, and the inTraining attribute does not affect lawyers. Because the lawyer role is permitted, the additional manager role has no added effect."
+      },
+      {
+        request: `Subject: Person1
+  roles: {Lawyer}
+  inTraining: False
+Action: Read
+Resource: Payslip`,
+        correct: "reject",
+        explain: "This request is <b>blocked</b>. Lawyers are permitted to read only contracts. Since there is no permit rule for lawyers reading payslips, the request is denied by default. You may have expected from intuition that lawyers could read payslips (e.g., their own payslip), but in this study, we want you to evaluate against the policy <b>as described here: not against your intuition</b> of how the policy <i>should</i> work."
+      },
+      {
+        request: `Subject: Person4
+  roles: {Manager}
+  inTraining: True
+Action: Read
+Resource: Contract`,
+        correct: "accept",
+        explain: "This request is <b>allowed</b>. Managers are permitted to read any resource, including contracts. The deny rule only restricts writing payslips while in training, but has nothing to do with reading contracts."
+      },
+      {
+        request: `Subject: Person1
+  roles: {Manager}
+  inTraining: False
+Action: Write
+Resource: Contract`,
+        correct: "reject",
+        explain: "This request is <b>blocked</b>. Managers are not permitted to write contracts, and no permit rule covers this action. By default, it is denied."
+      }
+    ];
+
+    let currentIndex = 0;
+    const userAnswers = {};
+
+    function renderCurrent() {
+      const holder = document.getElementById('quiz-items');
+      holder.innerHTML = '';
+      const item = QUIZ_EXAMPLES[currentIndex];
+
+      const container = document.createElement('div');
+      container.className = 'quiz-item';
+      container.dataset.answered = userAnswers[currentIndex] ? 'true' : 'false';
+
+      container.innerHTML = `
+        <div class="card bg-light p-2 mb-1">
+          <pre class="ltl-spot-trace" data-word="${item.request}">${item.request}</pre>
+        </div>
+        <form class="classify-form">
+          <div class="d-flex w-100 mb-2 gap-2" role="group">
+            <button type="button" class="btn btn-success fs-5 btn-accept" style="flex:1;">Accept</button>
+            <button type="button" class="btn btn-danger fs-5 btn-reject" style="flex:1;">Reject</button>
+          </div>
+        </form>
+        <div class="feedback"></div>
+      `;
+
+      holder.appendChild(container);
+
+      // Apply trace rendering to the new element
+      if (window.TraceRenderer) {
+        const renderer = new window.TraceRenderer();
+        renderer.renderAllTraces();
+      }
+
+      const accept = container.querySelector('.btn-accept');
+      const reject = container.querySelector('.btn-reject');
+      const feedback = container.querySelector('.feedback');
+
+      function handle(choice) {
+        if (container.dataset.answered === 'true') return;
+        // disable buttons immediately
+        accept.disabled = true;
+        reject.disabled = true;
+        container.dataset.answered = 'true';
+
+        // record response
+        userAnswers[currentIndex] = choice;
+        const isCorrect = choice === item.correct;
+
+  // choose emoji and lead text
+  // use a celebratory emoji for correct, and a neutral diff marker for incorrect
+  const emoji = isCorrect ? '🎉' : '✘';
+  const emojiClass = isCorrect ? 'emoji-result emoji-success' : 'emoji-result emoji-diff';
+  const leadText = isCorrect ? 'Correct Classification.' : 'Incorrect Classification.';
+
+        // render only emoji + lead text + explanation (no Accept/Reject badge to avoid confusion)
+        feedback.innerHTML = `
+          <div class="d-flex align-items-center mb-2">
+            <span class="${emojiClass}" aria-hidden="true">${emoji}</span>
+            <span class="feedback-text">${leadText}</span>
+          </div>
+          <div class="text-muted">${item.explain}</div>
+        `;
+
+        updateProgress();
+        // Re-render controls to enable Next/Finish after answering
+        renderControls();
+      }
+
+      accept.addEventListener('click', () => handle('accept'));
+      reject.addEventListener('click', () => handle('reject'));
+
+      renderControls();
+    }
+
+    function renderControls() {
+      const controls = document.getElementById('quiz-controls');
+      // Clear any existing custom buttons (we keep progress and continue link)
+      let nav = document.getElementById('quiz-nav');
+      if (nav) nav.remove();
+
+      nav = document.createElement('div');
+      nav.id = 'quiz-nav';
+      nav.className = 'd-flex gap-2';
+
+  const next = document.createElement('button');
+  next.className = 'btn btn-primary';
+  // Show 'Finish' on the last step to indicate completion
+  next.textContent = currentIndex === QUIZ_EXAMPLES.length - 1 ? 'Proceed to Next Task' : 'Next';
+      next.disabled = !(userAnswers[currentIndex]);
+      next.onclick = async () => {
+        // If on last and all answered, show proceed block instead of immediate submit
+        if (currentIndex === QUIZ_EXAMPLES.length - 1) {
+          // Directly submit via the shared handler when the nav button is used as Proceed
+          await submitQuiz();
+          return;
+        }
+
+        // Advance to next question
+        currentIndex = Math.min(QUIZ_EXAMPLES.length - 1, currentIndex + 1);
+        renderCurrent();
+      };
+
+      nav.appendChild(next);
+      controls.appendChild(nav);
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers).length;
+      document.getElementById('progress').textContent = `${answered} / ${QUIZ_EXAMPLES.length} answered`;
+      const proceed = document.getElementById('proceed-block');
+      if (answered === QUIZ_EXAMPLES.length) {
+        if (proceed) {
+          proceed.style.display = 'block';
+          // Hide any Continue-to-Study controls when proceed is visible
+          const cont = document.getElementById('continue-btn');
+          if (cont) cont.style.display = 'none';
+          document.querySelectorAll('a[href="/study"]').forEach(a => a.style.display = 'none');
+        }
+      } else {
+        if (proceed) proceed.style.display = 'none';
+      }
+    }
+
+    // Consolidated submission logic used by both the proceed button and the nav button
+    async function submitQuiz() {
+      // Ensure all answered
+      if (Object.keys(userAnswers).length !== QUIZ_EXAMPLES.length) {
+        alert('Please answer all questions before finishing.');
+        return;
+      }
+
+      let score = 0;
+      const details = {};
+      for (let i = 0; i < QUIZ_EXAMPLES.length; i++) {
+        const resp = userAnswers[i];
+        const ok = resp === QUIZ_EXAMPLES[i].correct;
+        if (ok) score += 1;
+        details[i] = {request: QUIZ_EXAMPLES[i].request, response: resp, correct: QUIZ_EXAMPLES[i].correct, ok};
+      }
+
+      try {
+        const res = await fetch('/quiz', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({score, details}),
+        });
+        const body = await res.json();
+        if (body?.redirect) window.location = body.redirect;
+        else window.location = '/study';
+      } catch (e) {
+        console.error(e);
+        alert('Failed to save quiz; proceeding to study.');
+        window.location = '/study';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize trace renderer
+      if (window.TraceRenderer) {
+        window.TraceRenderer.init();
+      }
+      
+      renderCurrent();
+      // Proceed button handler: submit results and continue
+      const proceedBtn = document.getElementById('proceed-btn');
+      if (proceedBtn) {
+        proceedBtn.addEventListener('click', async () => {
+          await submitQuiz();
+        });
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

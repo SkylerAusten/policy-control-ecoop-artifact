@@ -1,0 +1,21 @@
+Run: combo_not_correct_not_alt1_not_alt2_alt3
+Return code: 0
+==================================================
+STDOUT:
+Forge version: 4.2.1
+ branch: main
+ commit: dde65092
+ timestamp: Tue Feb 25 16:45:23 2025 +0000
+Forge is up-to-date.
+To report issues with Forge, please visit https://report.forge-fm.org
+Found satisfying instances:
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Accountant0))) (underAudit . ()))) ((size-variables 557) (size-clauses 964) (size-primary 70) (time-translation 64) (time-solving 5) (time-building 1759446931767)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ()) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 965) (size-primary 70) (time-translation 64) (time-solving 2) (time-building 1759446931842)) ())
+
+
+#(struct:Sat (#hash((Accountant . ((Accountant0))) (Action . ((Action3))) (Admin . ((Admin0))) (Edit . ((Action3))) (FinancialReport . ((Resource3))) (LegalDocument . ()) (Read . ()) (Request . ((Request0))) (Resource . ((Resource3))) (Role . ((Admin0) (Accountant0))) (Subject . ((Subject3))) (True . ((True0))) (archived . ((Resource3 True0))) (inTraining . ()) (reqAction . ((Request0 Action3))) (reqResource . ((Request0 Resource3))) (reqSubject . ((Request0 Subject3))) (roles . ((Subject3 Accountant0))) (underAudit . ((Resource3 True0))))) ((size-variables 557) (size-clauses 966) (size-primary 70) (time-translation 64) (time-solving 0) (time-building 1759446931846)) ())
+
+
+out of instances

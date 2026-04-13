@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Screener Questions</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <style>
+    .form-check-input {
+      border: 2px solid #6c757d;
+      margin-top: 0.35rem;
+    }
+    .form-check-input:checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    .form-check-label {
+      padding-left: 0.5rem;
+    }
+    .form-check.ps-0 {
+      padding-left: 0;
+    }
+  </style>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h1 class="mb-4">Before we begin…</h1>
+  <form method="post">
+
+    <!-- Q1: Programming experience -->
+    <div class="mb-4">
+      <label class="form-label fw-semibold fs-5">
+        Do you have any computer programming experience?
+        <span class="text-danger">*</span>
+      </label>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q1" id="q1_yes" value="yes" required>
+        <label class="form-check-label" for="q1_yes">Yes</label>
+      </div>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q1" id="q1_no" value="no">
+        <label class="form-check-label" for="q1_no">No</label>
+      </div>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q1" id="q1_idk" value="idk">
+        <label class="form-check-label" for="q1_idk">I’m not sure</label>
+      </div>
+    </div>
+
+    <!-- Q2: Boolean logic -->
+    <div class="mb-4">
+      <label class="form-label fw-semibold fs-5">
+        What is your experience with Boolean logic?
+        <span class="text-danger">*</span>
+      </label>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q2" id="q2_1" value="none" required>
+        <label class="form-check-label" for="q2_1">
+          I have no familiarity with Boolean logic.
+        </label>
+      </div>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q2" id="q2_2" value="basic">
+        <label class="form-check-label" for="q2_2">
+          I’ve heard of AND/OR/NOT or truth tables, but I haven’t studied them.
+        </label>
+      </div>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q2" id="q2_3" value="some">
+        <label class="form-check-label" for="q2_3">
+          I’ve studied or used Boolean logic in educational or professional contexts.
+        </label>
+      </div>
+      <div class="form-check ps-0 fs-5">
+        <input class="form-check-input" type="radio" name="q2" id="q2_4" value="advanced">
+        <label class="form-check-label" for="q2_4">
+          I’m very comfortable using Boolean logic (e.g., in math, logic, or CS).
+        </label>
+      </div>
+    </div>
+    <button class="btn btn-primary fs-5">Continue</button>
+  </form>
+</div>
+</body>
+</html>

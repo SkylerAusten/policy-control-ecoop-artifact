@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCola CND Demo</title>
+    
+    <!-- Bootstrap CSS for component styling -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Custom CSS -->
+</head>
+<body>
+    <div class="container border" id="main-panel">
+        <webcola-cnd-graph 
+            id="graph-container"
+            width="800" 
+            height="600"
+            layoutFormat="default"
+            aria-label="Interactive graph visualization">
+        </webcola-cnd-graph>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/cnd-core@1.2.1/dist/browser/cnd-core-complete.global.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/cnd-core@1.2.1/dist/components/react-component-integration.global.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cnd-core-1.2.1-react-component-integration.css') }}" /> 
+    
+    <script>
+        // Variables to store data
+        let currentInstanceLayout = null;
+
+        /**
+         * Get current Alloy XML from input field
+         * @returns {string} Alloy XML specification
+         */
+        function getCurrentAlloyXml() {
+           // EMBED THE JINJA HERE
+           return "";
+        }
+
+        /**
+         * Get current CND specification from input field  
+         * @returns {string} CND layout specification
+         */
+        function getCurrentCNDSpec() {
+            // Try to get value from React component first
+            return "";
+        }
+
+
+
+        async function loadAlloyData() {
+
+                // Get Alloy XML from input field
+                const alloyXml = getCurrentAlloyXml();
+            
+                // Get CND specification from input field
+                const cndSpec = getCurrentCNDSpec() || "";
+
+                // Create an Alloy Datum, which is the real representation of the Alloy instance
+                const alloyDatum = CndCore.AlloyInstance.parseAlloyXML(alloyXml);
+
+                // And this is what CnD operates upon.
+                const alloyDataInstance = new CndCore.AlloyDataInstance(alloyDatum.instances[0]);
+
+
+                // This is the evaluator used to unpack selectors.
+                let evaluationContext = {
+                    sourceData: alloyXml,
+                }; 
+                const forgeEvaluator = new CndCore.ForgeEvaluator();
+                forgeEvaluator.initialize(evaluationContext);
+
+                // Parsing your CnD program
+                let layoutSpec = CndCore.parseLayoutSpec(cndSpec);
+
+                // This is just some settings (incl temporal instance in the Alloy XML)
+                const ENABLE_ALIGNMENT_EDGES = true;
+                const instanceNumber = 0;
+                
+                const layoutInstance = new CndCore.LayoutInstance(
+                    layoutSpec, 
+                    forgeEvaluator, 
+                    instanceNumber, 
+                    ENABLE_ALIGNMENT_EDGES
+                );
+                
+                const projections = {};
+                // This is the layout in terms of the ATOMS
+
+                 const layoutResult = layoutInstance.generateLayout(alloyDataInstance, projections);
+                currentInstanceLayout = layoutResult.layout;
+                const webcolaGraphElement = document.getElementById('graph-container');
+                await webcolaGraphElement.renderLayout(currentInstanceLayout);
+
+                console.log('Generated Instance Layout using Alloy pipeline:', currentInstanceLayout);
+
+                updateStatus('Alloy pipeline complete with ForgeEvaluator! Ready to render.', 'success');
+            }
+        }
+
+        
+       
+
+
+    </script>
+</body>
+</html>

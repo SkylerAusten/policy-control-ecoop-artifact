@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Access Control Policy Study</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <style>
+    .description-box {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .policy-code { 
+      font-family: "Courier New", Courier, monospace; 
+      color: #000;
+    }
+    .policy-option {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 2px solid #dee2e6;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .policy-option:hover {
+      background-color: #f8f9fa;
+      border-color: #0d6efd;
+    }
+    .policy-option.selected {
+      background-color: #e7f1ff;
+      border-color: #0d6efd;
+      border-width: 3px;
+    }
+    .policy-option input[type="radio"] {
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+    .policy-content {
+      margin-left: 1.5rem;
+    }
+    .policy-content img {
+      display: block;
+      max-width: 100%;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      pointer-events: none;
+    }
+    .request-subject {
+      color: #4169e1;
+      font-weight: bold;
+    }
+    .request-action {
+      color: #F26035;
+    }
+    .request-resource {
+      color: #009B55;
+      font-style: italic;
+    }
+    .special-option {
+      font-style: italic;
+      color: #000;
+    }
+  </style>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <!-- Description -->
+  <div class="mb-4">
+    <h3>Select the policy that matches the following description:</h3>
+    <p class="text-muted mb-2">Please read the description carefully and select the policy that best matches it.</p>
+    <div class="form-control fs-5 description-box" readonly>{{ text_description|safe }}</div>
+  </div>
+
+  <!-- Policy Selection Form -->
+  <form id="policySelectionForm">
+    <input type="hidden" id="session_id" value="{{ session_id }}">
+    <input type="hidden" id="study_problem_id" value="{{ study_problem_id }}">
+    <input type="hidden" id="policy_order" value="{{ policy_order|tojson }}">
+
+    <h4 class="mb-3">Select one of the following policies:</h4>
+
+    {% for idx, option in policy_options|enumerate %}
+    <div class="policy-option" data-policy-key="{{ option.key }}" onclick="selectPolicy(this)">
+      <div>
+        <input type="radio" name="selected_policy" value="{{ option.key }}" id="policy_{{ idx }}">
+        <label for="policy_{{ idx }}" style="cursor: pointer;">
+          {% if option.key in ['none', 'unsure'] %}
+            <span class="special-option">{{ option.html }}</span>
+          {% else %}
+            Policy {{ idx + 1 }}
+          {% endif %}
+        </label>
+      </div>
+      {% if option.key not in ['none', 'unsure'] %}
+      <div class="policy-content">
+        {% if policy_images[option.key] %}
+          {% for image_path in policy_images[option.key] %}
+            <img src="{{ url_for('static', filename=image_path) }}" alt="Policy line {{ loop.index }}">
+          {% endfor %}
+        {% else %}
+          {{ option.html|safe }}
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>Submit Selection</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const SESSION_ID = {{ session_id|tojson }};
+  const STUDY_PROBLEM_ID = {{ study_problem_id|tojson }};
+  const POLICY_ORDER = {{ policy_order|tojson }};
+
+  function selectPolicy(element) {
+    // Remove selected class from all options
+    document.querySelectorAll('.policy-option').forEach(opt => {
+      opt.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked option
+    element.classList.add('selected');
+    
+    // Select the radio button
+    const radio = element.querySelector('input[type="radio"]');
+    radio.checked = true;
+    
+    // Enable submit button
+    document.getElementById('submitBtn').disabled = false;
+  }
+
+  // Handle form submission
+  document.getElementById('policySelectionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const selectedRadio = document.querySelector('input[name="selected_policy"]:checked');
+    if (!selectedRadio) {
+      alert('Please select a policy');
+      return;
+    }
+    
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    
+    try {
+      const response = await fetch('/submit_policy_selection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selected_policy: selectedRadio.value,
+          session_id: SESSION_ID,
+          study_problem_id: STUDY_PROBLEM_ID,
+          policy_order: POLICY_ORDER
+        })
+      });
+      
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(`HTTP ${response.status} - ${msg || 'no body'}`);
+      }
+      
+      const data = await response.json();
+      
+      // Redirect to next page
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      }
+    } catch (err) {
+      console.error('Submission failed:', err);
+      alert('Failed to submit. Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Selection';
+    }
+  });
+
+  // Allow clicking on radio button labels
+  document.querySelectorAll('.policy-option label').forEach(label => {
+    label.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const policyOption = this.closest('.policy-option');
+      selectPolicy(policyOption);
+    });
+  });
+</script>
+
+</body>
+</html>
