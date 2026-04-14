@@ -6,10 +6,18 @@ A Flask web application for a user study on attribute-based access control (ABAC
 
 - [Docker](https://docs.docker.com/get-docker/)
 
-## Building the image
+## Getting the image
+
+Pull the latest image from GHCR:
 
 ```bash
-docker build -t pick-policy-control-study-app:artifact .
+docker pull ghcr.io/skylerausten/policy-control-ecoop-artifact:latest
+```
+
+Or build locally:
+
+```bash
+docker build -t ghcr.io/skylerausten/policy-control-ecoop-artifact:latest .
 ```
 
 ## Running the container
@@ -19,7 +27,7 @@ docker build -t pick-policy-control-study-app:artifact .
 Run the app with an in-memory SQLite database. This is the simplest option for artifact reviewers — no MySQL setup needed. Data is stored in memory and lost when the container stops.
 
 ```bash
-docker run -d --name pick-app -p 8080:8080 pick-policy-control-study-app:artifact
+docker run -d --name pick-app -p 8080:8080 ghcr.io/skylerausten/policy-control-ecoop-artifact:latest
 ```
 
 Then open http://localhost:8080.
@@ -54,7 +62,7 @@ docker run -d --name pick-app --network pick-net -p 8080:8080 \
   -e DB_HOST=pick-db \
   -e DB_PORT=3306 \
   -e DB_NAME=pick_policy-control_app \
-  pick-policy-control-study-app:artifact
+  ghcr.io/skylerausten/policy-control-ecoop-artifact:latest
 ```
 
 Then open http://localhost:8080.
