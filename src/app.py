@@ -13,6 +13,7 @@ import uuid
 import hashlib
 import logging
 import re
+import secrets
 from functools import wraps
 from collections import defaultdict
 from typing import NoReturn
@@ -266,6 +267,8 @@ def setup_user():
         prolific_id = request.form.get("prolific_id", "").strip()
     else:
         prolific_id = request.args.get("PROLIFIC_PID", "").strip()
+        if not prolific_id and TESTING:
+            prolific_id = secrets.token_hex(12)  # 12 bytes = 24 hex chars
 
     # If still empty, render the PID entry form
     if TESTING:
