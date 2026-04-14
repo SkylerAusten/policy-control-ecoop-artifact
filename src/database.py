@@ -18,7 +18,6 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.mysql import CHAR
 from sqlalchemy.types import TypeDecorator, JSON
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -32,7 +31,7 @@ db = SQLAlchemy()
 class UUID(TypeDecorator):
     """TODO: Write Docstring."""
 
-    impl = CHAR
+    impl = String(36)
     cache_ok = True
 
     @property
@@ -40,7 +39,10 @@ class UUID(TypeDecorator):
         return uuid.UUID
 
     def load_dialect_impl(self, dialect):
-        return dialect.type_descriptor(CHAR(36))  # Store as string
+        if dialect.name == "mysql":
+            from sqlalchemy.dialects.mysql import CHAR
+            return dialect.type_descriptor(CHAR(36))
+        return dialect.type_descriptor(String(36))
 
     def process_bind_param(self, value, dialect):
         if value is None:
