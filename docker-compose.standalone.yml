@@ -1,7 +1,0 @@
-services:
-  app:
-    image: pick-policy-control-study-app:artifact
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    # No DB_* env vars — app_config.py falls back to sqlite:///:memory:
