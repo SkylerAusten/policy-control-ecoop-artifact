@@ -260,6 +260,11 @@ def generate_study_order(seed=None) -> list[int]:
     random.shuffle(order)
     return order
 
+@app.route("/")
+def index():
+    return redirect(url_for("setup_user"))
+
+
 @app.route("/setup", methods=["GET", "POST"])
 def setup_user():
     # On GET, look for a query-param; on POST, read the form
