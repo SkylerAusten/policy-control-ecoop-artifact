@@ -267,8 +267,6 @@ def setup_user():
         prolific_id = request.form.get("prolific_id", "").strip()
     else:
         prolific_id = request.args.get("PROLIFIC_PID", "").strip()
-        if not prolific_id and TESTING:
-            prolific_id = secrets.token_hex(12)  # 12 bytes = 24 hex chars
 
     # If still empty, render the PID entry form
     if TESTING:
@@ -276,7 +274,9 @@ def setup_user():
             error = None
             if request.method == "POST" and prolific_id:
                 error = "Please enter a valid 24-character Prolific ID."
-            return render_template("enter_pid.html", prolific_id=prolific_id, error=error)
+            # Prefill a random 24-char hex ID for convenience
+            prefill = secrets.token_hex(12) if request.method == "GET" else ""
+            return render_template("enter_pid.html", prolific_id=prefill, error=error)
     else:
         if not prolific_id or not re.fullmatch(r"[0-9a-f]{24}", prolific_id):
             error = None
